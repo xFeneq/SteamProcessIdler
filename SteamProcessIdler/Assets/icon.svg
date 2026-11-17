@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Window Clipping Path for Rounded Corners -->
+    <clipPath id="windowClip">
+      <rect x="28" y="28" width="456" height="456" rx="96" />
+    </clipPath>
+
+    <!-- Radial Glow for Virtual/Phantom Process Effect -->
+    <radialGradient id="phantomGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#66C0F4" stop-opacity="0.32" />
+      <stop offset="100%" stop-color="#1B2838" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Vibrant Steam Green Gradient for Active Idler Badge -->
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#95D600" />
+      <stop offset="100%" stop-color="#80C72C" />
+    </linearGradient>
+  </defs>
+
+  <!-- Base: Process Window Background -->
+  <rect x="28" y="28" width="456" height="456" rx="96" fill="#171A21" />
+
+  <!-- Process Window Title Bar (Clipped to Window Curve) -->
+  <g clip-path="url(#windowClip)">
+    <rect x="28" y="28" width="456" height="96" fill="#243B53" />
+    <line x1="28" y1="124" x2="484" y2="124" stroke="#2A475E" stroke-width="6" />
+
+    <!-- 3 Process Window Control Dots -->
+    <circle cx="80" cy="76" r="11" fill="#66C0F4" />
+    <circle cx="116" cy="76" r="11" fill="#66C0F4" />
+    <circle cx="152" cy="76" r="11" fill="#66C0F4" />
+  </g>
+
+  <!-- Process Window Outer Frame Border -->
+  <rect x="28" y="28" width="456" height="456" rx="96" fill="none" stroke="#2A475E" stroke-width="14" />
+
+  <!-- Center: Smooth Virtual/Phantom Game Controller (Bézier Curves) -->
+  <!-- Controller Dark Interior & Phantom Glow -->
+  <path d="M 256 172 C 204 172, 160 152, 128 170 C 96 188, 76 230, 76 274 C 76 324, 94 380, 136 380 C 172 380, 196 340, 220 318 C 236 304, 246 302, 256 302 C 266 302, 276 304, 292 318 C 316 340, 340 380, 376 380 C 418 380, 436 324, 436 274 C 436 230, 416 188, 384 170 C 352 152, 308 172, 256 172 Z"
+        fill="#1B2838" />
+
+  <path d="M 256 172 C 204 172, 160 152, 128 170 C 96 188, 76 230, 76 274 C 76 324, 94 380, 136 380 C 172 380, 196 340, 220 318 C 236 304, 246 302, 256 302 C 266 302, 276 304, 292 318 C 316 340, 340 380, 376 380 C 418 380, 436 324, 436 274 C 436 230, 416 188, 384 170 C 352 152, 308 172, 256 172 Z"
+        fill="url(#phantomGlow)" />
+
+  <!-- Controller Thick Bold Outline (Smooth Phantom Blueprint) -->
+  <path d="M 256 172 C 204 172, 160 152, 128 170 C 96 188, 76 230, 76 274 C 76 324, 94 380, 136 380 C 172 380, 196 340, 220 318 C 236 304, 246 302, 256 302 C 266 302, 276 304, 292 318 C 316 340, 340 380, 376 380 C 418 380, 436 324, 436 274 C 436 230, 416 188, 384 170 C 352 152, 308 172, 256 172 Z"
+        fill="none" stroke="#66C0F4" stroke-width="24" stroke-linejoin="round" stroke-linecap="round" />
+
+  <!-- Bottom-Right: Active Idler Badge -->
+  <!-- Outer Dark Ring & Green Circle -->
+  <circle cx="388" cy="388" r="88" fill="url(#badgeGrad)" stroke="#171A21" stroke-width="16" />
+
+  <!-- Play Symbol inside Badge (Solid Dark Steam Navy) -->
+  <polygon points="368,354 424,388 368,422" fill="#171A21" stroke="#171A21" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+</svg>

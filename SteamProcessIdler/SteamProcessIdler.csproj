@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UseWPF>true</UseWPF>
+        <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Resource Include="Assets\app.ico" />
+        <Resource Include="Assets\icon_256.png" />
+        <None Include="Assets\icon.svg" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="ValveKeyValue" Version="0.20.0.417" />
+    </ItemGroup>
+
+</Project>
