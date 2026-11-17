@@ -4,182 +4,119 @@
 
 # SteamProcessIdler
 
-**A modern, lightweight Windows desktop utility for running isolated, virtual Steam game process stubs.**
+**Play any Steam game in the background without downloading gigabytes of game files.**
 
-Simulate official Steam game processes in the background with zero performance overhead, native Discord activity detection, full library discovery, and sandbox isolation.
+Simulate official Steam game processes to complete Discord Quests, farm Steam trading cards, and track playtime with zero performance impact.
 
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6?logo=windows&logoColor=white)](https://www.microsoft.com/windows)
 [![.NET 9.0](https://img.shields.io/badge/.NET-9.0%20WPF-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/download/dotnet/9.0)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20x64-0078D6?logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Publish](https://img.shields.io/badge/Single--File-Self--Contained%20Ready-238636?logo=visualstudio&logoColor=white)](https://learn.microsoft.com/dotnet/core/deploying/single-file/overview)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 </div>
 
 ---
 
-## Table of Contents
+## What is SteamProcessIdler?
 
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Architecture](#architecture)
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
-- [Building from Source](#building-from-source)
-- [Single-File Publish](#single-file-publish)
-- [Safety & Sandbox Guardrails](#safety--sandbox-guardrails)
-- [Disclaimer](#disclaimer)
-- [License](#license)
+**SteamProcessIdler** tells Steam and Discord that you are actively playing a game, **without requiring you to download or install the actual 50–100 GB game files**.
+
+It creates a tiny, safe background simulator (stub process) that communicates with your local Steam client. To Windows, Steam, and Discord, your game looks and acts 100% real — while taking virtually **0% CPU** and less than **15 MB of RAM**.
 
 ---
 
-## Overview
+## Why use it?
 
-**SteamProcessIdler** is engineered for players, collectors, and developers who want to keep Steam game processes running in the background without installing gigabytes of game assets or wasting CPU/GPU resources.
+### 🎮 Complete Discord Quests & Activity
+Many Discord Quests reward you with exclusive avatar decorations, badges, or in-game loot just for playing a game for 15 minutes. With SteamProcessIdler, you can finish these quests in minutes without wasting hours downloading huge games, and **without connecting third-party bots or sharing your Discord account token**.
 
-Whether you want to farm Steam trading cards, keep active play sessions for social status, or test process-dependent integrations, SteamProcessIdler handles process lifecycles safely inside an isolated temporary sandbox.
+### 🃏 Farm Steam Trading Cards & Hours
+Effortlessly drop card sets from newly bought games, accumulate playtime, or keep active hours on your profile across games in your library (including Free-to-Play titles and shared Steam Family libraries).
 
----
-
-## Key Features
-
-- **Full Steam Library Discovery:**
-  - Recursively aggregates game titles from all configured Steam library folders (`libraryfolders.vdf`, `appmanifest_*.acf`), local user configs (`userdata\<id>\config\localconfig.vdf`, `sharedconfig.vdf`), and binary cache (`appcache\appinfo.vdf`).
-  - Seamlessly detects owned titles, Free-to-Play games, and shared Steam Family Sharing libraries while filtering out dedicated servers, soundtracks, tools, and DLCs.
-
-- **Smart Executable Heuristics & Custom Overrides:**
-  - Evaluates launch configurations in `appinfo.vdf` to prioritize genuine game binaries (e.g. `DeltaForceClient-Win64-Shipping.exe`) over secondary launchers, crash reporters, and updaters.
-  - Supports manual game overrides and custom game configurations stored persistently in `%LOCALAPPDATA%\SteamProcessIdler\custom_games.json`.
-
-- **Discord Rich Presence & Activity Detection:**
-  - Background stubs instantiate a dedicated off-screen Win32 window (`1280x720`, `Left = -32000`, `Top = -32000`, `HWND`), ensuring external applications like Discord, AMD Adrenalin, and NVIDIA GeForce Experience reliably detect the simulated game as an active running application.
-
-- **100% Icon Coverage (Local & CDN Cache):**
-  - Instant discovery of local client icons in `<SteamPath>\steam\games\`, `<SteamPath>\appcache\librarycache\`, and application cache.
-  - Automatically fetches missing game icons asynchronously from Valve's official Steam CDN directly into `%LOCALAPPDATA%\SteamProcessIdler\IconCache\`.
-
-- **Hardened Sandbox Isolation:**
-  - All process stubs run strictly within `%LOCALAPPDATA%\SteamProcessIdler\Sessions\<AppId>\`.
-  - The application **never touches or modifies** original game installation folders (`steamapps\common`).
-  - Full path traversal protection (`..` rejection and `Path.GetFullPath()` boundary assertions).
-  - Automatic cleanup of temporary session folders on process termination and automatic recovery of orphaned sessions from previous system reboots.
-
-- **Adaptive Windows DWM Title Bar Theme:**
-  - Dynamically detects Windows Personalization settings (`AppsUseLightTheme`) via native P/Invoke (`dwmapi.dll` `DWMWA_USE_IMMERSIVE_DARK_MODE`).
-  - Live reaction to system theme changes via `SystemEvents.UserPreferenceChanged` (dark title bar in Dark Mode, white title bar in Light Mode).
+### 💾 Save Disk Space & Internet Bandwidth
+Never delete your favorite games just to free up temporary space for an event or promo. Keep your SSD free and avoid downloading hundreds of gigabytes of unwanted data.
 
 ---
 
-## Architecture
+## How to Use (Step-by-Step)
 
-SteamProcessIdler uses a **dual-mode single-executable architecture**:
+### 1. Download & Launch
+1. Download the latest `SteamProcessIdler.exe` from the **[Releases](https://github.com/xFeneq/SteamProcessIdler/releases)** page.
+2. Make sure your official **Steam** desktop app is open and logged in.
+3. Run `SteamProcessIdler.exe`.
+   *(Requires the free [.NET 9.0 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0) if you don't already have it installed).*
 
-```mermaid
-flowchart TD
-    Start["SteamProcessIdler.exe"] --> CheckArgs{"Contains --stub <AppId>?"}
-    
-    CheckArgs -- "Yes (Stub Mode)" --> StubRunner["SteamworksStubRunner"]
-    CheckArgs -- "No (GUI Mode)" --> MainWindow["WPF Desktop UI"]
+### 2. Pick Your Game
+- Scroll through your Steam library in the left column or use the instant search bar to find a game by name, AppID, or `.exe` file.
+- Don't see a game you want? Click **+ Add Custom** to add any Steam game by entering its numeric AppID.
 
-    subgraph "Stub Runner (Headless Worker)"
-        StubRunner --> WriteAppId["Write steam_appid.txt into Session Dir"]
-        StubRunner --> Win32Window["Create Off-Screen Win32 HWND (1280x720)"]
-        Win32Window --> InitAPI["P/Invoke steam_api64.dll -> SteamAPI_Init()"]
-        InitAPI --> MessagePump["Dispatcher.PushFrame (Win32 Message Loop)"]
-        MessagePump --> ShutdownAPI["On Exit -> SteamAPI_Shutdown()"]
-    end
-
-    subgraph "Desktop UI (WPF)"
-        MainWindow --> CleanupSessions["ProcessStubManager.CleanupOrphanedSessions()"]
-        MainWindow --> Scanner["SteamLibraryScanner (appinfo.vdf + libraryfolders)"]
-        MainWindow --> IconCache["Local Cache + Async Steam CDN Downloader"]
-        MainWindow --> SessionManager["ProcessStubManager (Session Tracker & Timers)"]
-        SessionManager --> SpawnShim["Spawn: <GameExe>.exe --stub <AppId> --name <Title>"]
-    end
-```
-
-### 1. GUI Mode (Default)
-When launched without arguments, SteamProcessIdler starts the modern Steam-themed dark UI, scans the local Steam library, displays real-time session counters, and provides search, launch, and configuration controls.
-
-### 2. Stub Runner Mode (`--stub <AppId>`)
-When launched with `--stub <AppId> [--name "<Title>"]`, the executable runs as a lightweight worker:
-1. Replicates directory structures and copies `steam_api64.dll` into the isolated session folder.
-2. Generates `steam_appid.txt` matching the target AppID.
-3. Creates an off-screen Win32 window (`HWND`) with the game title.
-4. Invokes `SteamAPI_Init()` via `steam_api64.dll` to authenticate with the local Steam client.
-5. Keeps the message loop alive until closed via GUI or process termination.
+### 3. Click Launch
+- Click the green **▶ Launch** button next to your game.
+- The game will appear in the **Active Sessions** list on the right.
+- Steam will switch your status to **In-Game**, and Discord will show the game in your **Playing** activity status.
+- When you are finished, simply click **⏹ Stop** (or **Stop All Sessions**).
 
 ---
 
-## Prerequisites
-
-- **Operating System:** Windows 10 (Build 1809 or newer) or Windows 11 (x64)
-- **Runtime:** [.NET 9.0 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0) (if running non-self-contained builds)
-- **Steam Client:** Official Steam desktop client installed and running with an active login.
-- **Steamworks API Binary:** Requires a 64-bit `steam_api64.dll` binary:
-  - SteamProcessIdler automatically searches for and copies `steam_api64.dll` from your local Steam installation.
-  - Alternatively, you can place a copy of `steam_api64.dll` directly in the application root directory (available from the official [Steamworks SDK](https://partner.steamgames.com/) or any 64-bit Steam game).
+> [!TIP]
+> ### Games with Launchers (e.g., Delta Force, MMOs)
+> Some games on Steam launch an external launcher first (e.g. `launcher.exe`), but Discord expects the actual main client executable (such as `DeltaForceClient-Win64-Shipping.exe` or `Game\Binaries\Win64\Shipping.exe`).
+> 
+> If a game has multiple `.exe` options, SteamProcessIdler lets you select the target binary from a dropdown. You can also click the edit button (**✎**) next to any game to type the exact relative `.exe` path. The app remembers your custom choices permanently!
 
 ---
 
-## Getting Started
+## Safety & Privacy
 
-1. Download or publish `SteamProcessIdler.exe`.
-2. Ensure Steam is running on your PC.
-3. Launch `SteamProcessIdler.exe`.
-4. Check the status indicators in the header:
-   - **Steam:** Green dot indicates local Steam path found in Windows Registry.
-   - **steam_api64.dll:** Green dot indicates the 64-bit API library is ready.
-5. Select any game from your library and click **Launch**.
-6. The game process will start simulating in the background and appear in your **Active Sessions** list.
+- **100% Local & Offline:** SteamProcessIdler connects only to your local Steam client. It has zero telemetry, zero background servers, and never asks for your Steam password or Discord token.
+- **Never Touches Real Game Files:** All simulation files are strictly quarantined inside a temporary Windows folder (`%LOCALAPPDATA%\SteamProcessIdler\Sessions\`). Your existing Steam library files (`steamapps\common`) are never altered or written to.
+- **Automatic Cleanup:** When a session is stopped or the application closes, temporary session files are automatically erased.
 
 ---
 
-## Building from Source
+## FAQ (Frequently Asked Questions)
 
-Ensure the [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) is installed.
+#### Q: Why does Steam temporarily show the game as "Installed / Ready to Play" while it's running?
+**A:** When Steam detects an active game process, it keeps that status in your computer's RAM during the session so game overlays and features work properly. It **does not download any game files** to your hard drive. As soon as you stop the session or restart Steam, it returns to normal.
+
+#### Q: Where does `steam_api64.dll` come from? Do I need to find it?
+**A:** In 99% of cases, you don't need to do anything! When you start the app, SteamProcessIdler automatically finds `steam_api64.dll` in your local Steam client folder. You can see the green status dot at the top right of the app confirming it is ready.
+
+#### Q: Can I run multiple games at the same time?
+**A:** Yes! You can launch multiple games from the list. Each game runs independently in its own isolated background process.
+
+---
+
+<details>
+<summary><b>🛠️ Building from Source (For Developers)</b></summary>
+
+<br />
+
+If you prefer to compile SteamProcessIdler yourself, you only need the [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0):
 
 ```powershell
 # Clone the repository
-git clone https://github.com/your-username/SteamProcessIdler.git
+git clone https://github.com/xFeneq/SteamProcessIdler.git
 cd SteamProcessIdler
 
-# Build in Debug configuration
+# Build in Debug mode
 dotnet build SteamProcessIdler/SteamProcessIdler.csproj
+
+# Publish an optimized single-file Release executable
+dotnet publish SteamProcessIdler/SteamProcessIdler.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true
 ```
 
----
-
-## Single-File Publish
-
-To produce an optimized single-file executable for distribution:
-
-```powershell
-dotnet publish SteamProcessIdler/SteamProcessIdler.csproj `
-  -c Release `
-  -r win-x64 `
-  --self-contained false `
-  -p:PublishSingleFile=true
-```
-
-The resulting standalone executable will be located in:
+The resulting standalone `.exe` will be located in:
 `SteamProcessIdler/bin/Release/net9.0-windows/win-x64/publish/SteamProcessIdler.exe`
 
----
-
-## Safety & Sandbox Guardrails
-
-- **Zero Game Modification:** SteamProcessIdler never writes to, deletes from, or modifies any files in your real game installation directories (`steamapps\common`).
-- **Temporary Isolation:** Every game session operates inside a quarantined folder in `%LOCALAPPDATA%\SteamProcessIdler\Sessions\<AppId>\`.
-- **Automatic Cleanup:** When you click **Stop** or close the application, session directories and temporary stubs are completely removed from disk.
-- **Path Traversal Defense:** All input paths are validated against rooted path manipulation and directory climbing sequences (`..`).
+</details>
 
 ---
 
 ## Disclaimer
 
-**SteamProcessIdler** is an independent, community-driven open-source utility and is **not affiliated, associated, authorized, endorsed by, or in any way officially connected** with Valve Corporation, Steam, Discord Inc., or any of their subsidiaries or affiliates.
+**SteamProcessIdler** is an independent, community-driven open-source project and is **not affiliated, associated, authorized, endorsed by, or in any way officially connected** with Valve Corporation, Steam, Discord Inc., or any of their subsidiaries or affiliates.
 
-All product names, logos, and brands are property of their respective owners.
+All game titles, trademarks, and registered marks belong to their respective owners.
 
 ---
 
