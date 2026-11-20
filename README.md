@@ -9,7 +9,7 @@ A lightweight, native Windows desktop application to simulate running Steam game
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011%20(x64)-0078D6?style=flat)](#requirements)
 [![Language](https://img.shields.io/badge/Language-Rust%202024-DEA584?style=flat)](https://www.rust-lang.org)
 [![Version](https://img.shields.io/badge/Version-1.3.0-66C0F4?style=flat)](https://github.com/xFeneq/SteamProcessIdler/releases)
-[![License](https://img.shields.io/badge/License-MIT-0284C7?style=flat)](LICENSE)
+[![License](https://img.shields.io/badge/License-GPL--3.0-0284C7?style=flat)](LICENSE)
 
 </div>
 
@@ -27,26 +27,26 @@ A lightweight, native Windows desktop application to simulate running Steam game
 
 SteamProcessIdler operates entirely on your local machine using authentic Steamworks client hooks and lightweight background workers:
 
-1. **Reads your local Steam library:** It automatically scans your local Steam metadata (`appinfo.vdf` and `localconfig.vdf`) to discover all games assigned to your account, including uninstalled titles and family shared libraries.
-2. **Runs an empty background process:** When you click **Launch**, it spawns a minimal, empty stub process (~2–4 MB RAM) matching the exact `.exe` file name of the chosen game and registers an invisible, off-screen Win32 window (which enables **Discord Activity** to detect the game).
-3. **Connects to your running Steam client:** In an isolated temporary session sandbox, the stub initializes the official local `steam_api64.dll` from your Steam installation. Steam immediately marks you as "In-Game" and counts playtime and card drops normally.
-4. **Protects your account in the background:** An integrated safety scanner continuously monitors system processes. If you launch a real game protected by VAC or third-party anti-cheat, the shield immediately pauses and locks protected idling sessions.
+1. **Scans your Steam library locally:** Automatically scans your local Steam files (`appinfo.vdf` and `localconfig.vdf`) to discover all games assigned to your account — including uninstalled titles and family shared libraries.
+2. **Spawns an empty background process:** When you click **Launch**, it creates a lightweight, empty process (~2–4 MB RAM) matching the exact `.exe` file name of the chosen game and opens an invisible, off-screen Win32 window (which allows **Discord Activity** to detect the game).
+3. **Connects to your active Steam client:** In an isolated temporary session sandbox, it hooks the local `steam_api64.dll` from your active Steam client. Steam instantly registers you as "In-Game" and accrues playtime and trading card drops normally.
+4. **Guards your sessions automatically:** An integrated background monitor constantly tracks active system processes. If you launch a real game protected by VAC or third-party anti-cheat, the shield immediately pauses and locks protected idling sessions.
 
 ---
 
-### Use Cases
+### Common Use Cases
 
 - **Complete Discord Quests:** Fulfill playtime requirements for Discord Quests without spending hours downloading 50+ GB game packages.
 - **Farm Steam Trading Cards:** Idle eligible titles in the background to earn trading card drops effortlessly.
 - **Track & Accumulate Playtime:** Accrue playtime hours across owned games and family shared titles.
-- **Save Storage & Bandwidth:** Conserve hundreds of gigabytes of SSD space, avoid unnecessary drive wear, and eliminate huge download quotas.
+- **Save Storage & Bandwidth:** Conserve hundreds of gigabytes of SSD space, avoid unnecessary drive write wear, and eliminate huge download quotas.
 
 ---
 
 ### Key Features
 
-#### 1. Library & Discord Detection
-- **Fast binary library scanning:** Parses `appinfo.vdf`, `libraryfolders.vdf`, and `localconfig.vdf` directly from your local Steam installation with multi-account support.
+#### 1. Smart Library & Discord Detection
+- **Fast binary library scanning:** Parses `appinfo.vdf`, `libraryfolders.vdf`, and `localconfig.vdf` directly from your local Steam directory with multi-account support.
 - **Discord Quests & Activity compatibility:** Automatically tags games matching Discord's detectable application list (`DC` badge) for guaranteed quest completion.
 - **Executable path overrides:** Customize relative executable paths per title for games that use custom launchers, with one-click **Reset to Default**.
 - **Custom game registration:** Easily register and idle non-library games or custom AppIDs using `+ Add Custom`.
@@ -63,7 +63,7 @@ SteamProcessIdler operates entirely on your local machine using authentic Steamw
 - **Favorites system:** Mark favorite titles with a crisp golden star; filter by `Favorites` or sort your library using `Favorites First`.
 - **Persistent lifetime statistics:** Optional local tracking (`history.json`) recording total idled time, session count, and timestamps with a dedicated `History` modal.
 
-#### 4. Native Rust Performance & Design
+#### 4. Native Rust Architecture
 - **Single standalone executable:** Zero external runtimes (no .NET runtime, Python, or Visual C++ redistributable required), statically linked x64 binary under ~6 MB.
 - **Ultra-low resource usage:** Background simulation stub processes consume only about 2 to 4 MB of RAM each.
 - **Dual view modes:** Toggle between high-density **List View** and visual **Grid View** with locally cached Steam banners.
@@ -84,14 +84,14 @@ SteamProcessIdler operates entirely on your local machine using authentic Steamw
 #### Do I need to own the game on Steam?
 **Yes.** You must own the game on your Steam account, have access to it via Steam Family Sharing, or have it added as a Free-to-Play game. SteamProcessIdler communicates with your genuine Steam client and does not bypass Steam licensing or pirate games.
 
-#### Do I need to download or install the game files?
+#### Do I need to install the game first?
 **No.** SteamProcessIdler creates lightweight dummy worker processes with valid Win32 window handles and Steamworks API hooks. You do not need to download or install any game files on your drive.
 
-#### Is it safe to use? Can I get VAC banned?
-SteamProcessIdler never modifies, patches, or injects into game memory or system files. It runs a standalone stub that calls standard Steamworks API functions (`SteamAPI_Init` / `SteamAPI_Shutdown`). Furthermore, the built-in **VAC & Anti-Cheat Safety Shield** proactively locks protected titles if active anti-cheat processes (such as EAC, BattlEye, or Vanguard) are detected in the system. As a general rule, you should avoid running simulated sessions alongside active competitive multiplayer games.
-
-#### Does it ask for my Steam username or password?
+#### Does it ask for my Steam login or password?
 **Never.** The application operates 100% locally on your computer and attaches directly to your running Steam desktop client through the standard Steamworks DLL. It never asks for, handles, or transmits account credentials, passwords, or Steam Guard codes.
+
+#### Is it safe to use with VAC / Anti-Cheat games?
+SteamProcessIdler never modifies, patches, or injects into game memory or system files. It runs a standalone stub that calls standard Steamworks API functions (`SteamAPI_Init` / `SteamAPI_Shutdown`). Furthermore, the built-in **VAC & Anti-Cheat Safety Shield** proactively locks protected titles if active anti-cheat processes (such as EAC, BattlEye, or Vanguard) are detected in the system. As a general rule, you should avoid running simulated sessions alongside active competitive multiplayer games.
 
 ---
 
@@ -105,4 +105,4 @@ SteamProcessIdler never modifies, patches, or injects into game memory or system
 ### Safety & Disclaimer
 
 - **Isolated sandbox:** All temporary session files reside strictly in `%LOCALAPPDATA%\SteamProcessIdler\Sessions\` and are cleaned up automatically.
-- **Independent project:** SteamProcessIdler is an independent open-source utility and is not affiliated with, endorsed by, or connected to Valve Corporation or Discord Inc.
+- **Independent project:** SteamProcessIdler is an independent open-source utility licensed under the GNU General Public License v3.0 (GPL-3.0) and is not affiliated with, endorsed by, or connected to Valve Corporation or Discord Inc.

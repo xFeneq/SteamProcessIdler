@@ -3,6 +3,7 @@
 name = "SteamProcessIdler"
 version = "1.3.0"
 edition = "2024"
+license = "GPL-3.0-only"
 
 # Dependencies for GUI, system APIs, process manipulation and network
 [dependencies]
