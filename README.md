@@ -15,47 +15,83 @@ A lightweight, native Windows desktop application to simulate running Steam game
 
 ---
 
+### What is SteamProcessIdler?
+
+**SteamProcessIdler** allows you to accumulate Steam playtime hours, farm Steam Trading Cards, and complete **Discord Quests** (with active *Rich Presence* status) **without downloading or installing dozens of gigabytes of game files** on your drive.
+
+> **Important:** SteamProcessIdler **requires you to own the game** on your Steam account (or have access to it via Steam Family Sharing or Free-to-Play titles). It does not unlock, pirate, or bypass licenses for games you do not own.
+
+---
+
 ### How It Works
 
-SteamProcessIdler spawns a lightweight local worker matching the target game executable, creates an off-screen Win32 window, and initializes the Steamworks API (`steam_api64.dll`) inside an isolated session sandbox. 
+SteamProcessIdler operates entirely on your local machine using authentic Steamworks client hooks and lightweight background workers:
 
-Because the process runs locally with an authentic window handle and valid Steam client integration, both **Steam** and **Discord** recognize the title as actively running without ever downloading full game packages.
+1. **Reads your local Steam library:** It automatically scans your local Steam metadata (`appinfo.vdf` and `localconfig.vdf`) to discover all games assigned to your account, including uninstalled titles and family shared libraries.
+2. **Runs an empty background process:** When you click **Launch**, it spawns a minimal, empty stub process (~2–4 MB RAM) matching the exact `.exe` file name of the chosen game and registers an invisible, off-screen Win32 window (which enables **Discord Activity** to detect the game).
+3. **Connects to your running Steam client:** In an isolated temporary session sandbox, the stub initializes the official local `steam_api64.dll` from your Steam installation. Steam immediately marks you as "In-Game" and counts playtime and card drops normally.
+4. **Protects your account in the background:** An integrated safety scanner continuously monitors system processes. If you launch a real game protected by VAC or third-party anti-cheat, the shield immediately pauses and locks protected idling sessions.
+
+---
+
+### Use Cases
+
+- **Complete Discord Quests:** Fulfill playtime requirements for Discord Quests without spending hours downloading 50+ GB game packages.
+- **Farm Steam Trading Cards:** Idle eligible titles in the background to earn trading card drops effortlessly.
+- **Track & Accumulate Playtime:** Accrue playtime hours across owned games and family shared titles.
+- **Save Storage & Bandwidth:** Conserve hundreds of gigabytes of SSD space, avoid unnecessary drive wear, and eliminate huge download quotas.
 
 ---
 
 ### Key Features
 
-#### 1. Core Simulation & Library Scanning
-- **Fast binary scanner:** Parses `appinfo.vdf`, `libraryfolders.vdf`, and `localconfig.vdf` directly from your local Steam installation with seamless support for **multi-account setups** and **Family Sharing**.
-- **Discord Quests & Activity compatibility:** Automatically detects and tags games matching the Discord detectable catalog (`DC` badge) for effortless quest completion.
-- **Executable path overrides:** Custom executable paths can be edited per game for titles with external launchers, with one-click **Reset to Default** to restore original Steam metadata.
-- **Custom game entries:** Easily register and idle non-library games or custom AppIDs via `+ Add Custom`.
+#### 1. Library & Discord Detection
+- **Fast binary library scanning:** Parses `appinfo.vdf`, `libraryfolders.vdf`, and `localconfig.vdf` directly from your local Steam installation with multi-account support.
+- **Discord Quests & Activity compatibility:** Automatically tags games matching Discord's detectable application list (`DC` badge) for guaranteed quest completion.
+- **Executable path overrides:** Customize relative executable paths per title for games that use custom launchers, with one-click **Reset to Default**.
+- **Custom game registration:** Easily register and idle non-library games or custom AppIDs using `+ Add Custom`.
 
 #### 2. VAC & Anti-Cheat Safety Shield
-- **Background system scanner:** Lightweight, periodic Win32 process monitor checks active Windows processes with near-zero CPU overhead.
-- **Anti-Cheat safety shield:** Automatically identifies **VAC-protected games** and third-party anti-cheat services (Easy Anti-Cheat, BattlEye, Vanguard, Ricochet, GameGuard, and more).
-- **Proactive session protection:** Instantly locks protected games and automatically halts running sessions when online anti-cheat protected titles are active.
+- **Continuous background monitor:** Periodic Win32 process snapshot checks active system processes with near-zero CPU usage.
+- **Heuristic anti-cheat detection:** Automatically recognizes **VAC-protected titles** and third-party anti-cheat services (Easy Anti-Cheat, BattlEye, Vanguard, Ricochet, GameGuard, Xigncode, and more).
+- **Proactive session locking:** Instantly locks protected games and automatically halts running sessions when online anti-cheat protected titles are active.
 - **Duplicate process protection:** Prevents starting an idler session if the real game executable is already running on your PC.
 
 #### 3. Session Queue, Auto-Stop & History
-- **Automated session queue:** Queue multiple games for sequential execution with fixed or randomized session intervals and cooldowns.
-- **Session auto-stop:** Automatically terminates running sessions after a configured duration, perfect for timed Discord quests.
-- **Favorites system:** Mark favorite titles with a crisp golden star; filter by `Favorites` or sort library using `Favorites First`.
-- **Persistent lifetime statistics:** Optional local tracking (`history.json`) recording total idled time, session counts, and timestamp logs with a dedicated `History` modal.
+- **Automated session queue:** Queue multiple games for sequential idling with configurable fixed or randomized durations and cooldowns.
+- **Session auto-stop:** Automatically stops manually launched sessions after a configured duration (ideal for timed Discord quests).
+- **Favorites system:** Mark favorite titles with a crisp golden star; filter by `Favorites` or sort your library using `Favorites First`.
+- **Persistent lifetime statistics:** Optional local tracking (`history.json`) recording total idled time, session count, and timestamps with a dedicated `History` modal.
 
-#### 4. Lightweight Native Rust Design
-- **Single portable executable:** Zero external dependencies (no .NET runtime or Visual C++ redistributable required), statically linked x64 binary under ~6 MB.
-- **Minimal resource usage:** Background simulation stub processes consume only ~2 to 4 MB of RAM each.
-- **Dual view modes:** Toggle between high-density **List View** and an artwork-rich **Grid View** with local banner caching.
-- **In-app updater:** Checks for new releases directly from GitHub and provides seamless self-updating.
+#### 4. Native Rust Performance & Design
+- **Single standalone executable:** Zero external runtimes (no .NET runtime, Python, or Visual C++ redistributable required), statically linked x64 binary under ~6 MB.
+- **Ultra-low resource usage:** Background simulation stub processes consume only about 2 to 4 MB of RAM each.
+- **Dual view modes:** Toggle between high-density **List View** and visual **Grid View** with locally cached Steam banners.
+- **Built-in updater:** Automatically checks GitHub Releases for new updates with in-app download and hot-replacement.
 
 ---
 
 ### Quick Start
 
-1. **Download:** Grab the latest `SteamProcessIdler.exe` from [GitHub Releases](https://github.com/xFeneq/SteamProcessIdler/releases).
-2. **Launch:** Run the application while the official Steam desktop client is open and logged in.
+1. **Download:** Get the latest `SteamProcessIdler.exe` from [GitHub Releases](https://github.com/xFeneq/SteamProcessIdler/releases).
+2. **Launch:** Run the application while your official Steam desktop client is open and logged in.
 3. **Idle:** Select any game from your library, click **Launch** to simulate playtime immediately, or click **+** to add it to your automated queue.
+
+---
+
+### Frequently Asked Questions (FAQ)
+
+#### Do I need to own the game on Steam?
+**Yes.** You must own the game on your Steam account, have access to it via Steam Family Sharing, or have it added as a Free-to-Play game. SteamProcessIdler communicates with your genuine Steam client and does not bypass Steam licensing or pirate games.
+
+#### Do I need to download or install the game files?
+**No.** SteamProcessIdler creates lightweight dummy worker processes with valid Win32 window handles and Steamworks API hooks. You do not need to download or install any game files on your drive.
+
+#### Is it safe to use? Can I get VAC banned?
+SteamProcessIdler never modifies, patches, or injects into game memory or system files. It runs a standalone stub that calls standard Steamworks API functions (`SteamAPI_Init` / `SteamAPI_Shutdown`). Furthermore, the built-in **VAC & Anti-Cheat Safety Shield** proactively locks protected titles if active anti-cheat processes (such as EAC, BattlEye, or Vanguard) are detected in the system. As a general rule, you should avoid running simulated sessions alongside active competitive multiplayer games.
+
+#### Does it ask for my Steam username or password?
+**Never.** The application operates 100% locally on your computer and attaches directly to your running Steam desktop client through the standard Steamworks DLL. It never asks for, handles, or transmits account credentials, passwords, or Steam Guard codes.
 
 ---
 
@@ -68,6 +104,5 @@ Because the process runs locally with an authentic window handle and valid Steam
 
 ### Safety & Disclaimer
 
-- **No credentials needed:** SteamProcessIdler never requests login credentials, passwords, or Steam Guard tokens. It hooks strictly into the local Steam client.
-- **Clean sandbox isolation:** All temporary session shims are isolated inside `%LOCALAPPDATA%\SteamProcessIdler\Sessions\` and cleaned up automatically.
-- **Use responsibly:** Avoid running simulated sessions simultaneously alongside active competitive online multiplayer games protected by anti-cheat. SteamProcessIdler is an independent open-source utility and is not affiliated with Valve Corporation or Discord Inc.
+- **Isolated sandbox:** All temporary session files reside strictly in `%LOCALAPPDATA%\SteamProcessIdler\Sessions\` and are cleaned up automatically.
+- **Independent project:** SteamProcessIdler is an independent open-source utility and is not affiliated with, endorsed by, or connected to Valve Corporation or Discord Inc.
