@@ -1,0 +1,45 @@
+## Rust artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+## IDEs (JetBrains Rider, RustRover, Visual Studio, VS Code)
+.idea/
+.vscode/
+.vs/
+*.iml
+*.user
+*.userprefs
+*.suo
+*.DotSettings.user
+
+## OS-generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+## Logs and crashes
+*.log
+*.dmp
+*.crash
+
+## Steam runtime, sessions, cache and overrides
+**/steam_api64.dll
+**/steam_api.dll
+**/steam_appid.txt
+**/Sessions/
+**/IconCache/
+**/BannerCache/
+custom_games.json
+settings.json
+history.json
+**/history.json
+discord_detectable.json
+*.tmp
+
+## AI & Local Project Context Memory
+.gemini/
+.agent/
+steamprocessidler-CONTEXT.md
